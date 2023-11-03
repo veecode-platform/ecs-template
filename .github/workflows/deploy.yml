@@ -30,9 +30,10 @@ jobs:
       - name: update task-definition
         run: |
             export IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/health-check-app:latest"
-            jq -i ".containerDefinitions[0].image = \"$IMAGE\"" ./task-definition.json
+            cat ./task-definition.json | jq --arg var $IMAGE '.containerDefinitions[0].image = $var' > ./task1.json
             export ROLE_ARN="arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecsTaskExecutionRole"
-            jq -i ".executionRoleArn = \"$ROLE_ARN\"" ./task-definition.json
+            cat task1.json | jq --arg var $ROLE_ARN '.executionRoleArn = $var' > ./task-definition.json
+
 
       - name: create task-definition
         run: |
